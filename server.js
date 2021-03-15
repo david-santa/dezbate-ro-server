@@ -35,11 +35,11 @@ app.get("/topics",
     function(req,res,next){
     try {
         topics.find().toArray().then(result =>
-            res.status(300).json({"message": result})
+            res.status(200).json({"message": result})
         );
     }
     catch(e){
-        res.status(400).json({"message": "something went wrong"});
+        res.status(404).json({"message": "something went wrong"});
     }
 })
 
@@ -53,9 +53,9 @@ app.get("/topics/:id",
         console.log(id);
         try {
             topics.findOne({_id: mongo.ObjectId(id)}).then(result =>
-                res.status(300).json({message: result}));
+                res.status(200).json({message: result}));
         }
         catch(e){
-            res.status(400).json({"message": "something went wrong"});
+            res.status(404).json({"message": "something went wrong"});
         }
     })
