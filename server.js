@@ -52,7 +52,6 @@ app.get("/topics",
 app.get("/topics/:id",
     function (req, res, next) {
         let id = req.params.id;
-        console.log(id);
         try {
             topics.findOne({_id: mongo.ObjectId(id)}).then(result =>
                 res.status(200).json({message: result}));
@@ -74,6 +73,23 @@ app.post("/topics",
     }
     catch(e){
         res.status(400).json({"message": "something went wrong"});
-        console.log(e);
     }
+    })
+
+/**
+ * TOPICS ADD A VIEW
+ */
+
+app.put("/topics/:id",
+    function(req,res,next){
+        let id = req.params.id;
+        try{
+            console.log(id);
+            topics.findOneAndUpdate({_id:mongo.ObjectId(id)}, {$inc: {"views": 1}});
+            res.status(200).json({"message":"updated"})
+        }
+        catch(e){
+            console.log(e)
+            res.status(400).json({"message": "something went wrong"});
+        }
     })
