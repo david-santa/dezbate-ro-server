@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const mongo = require('mongodb')
 const MongoClient = require('mongodb').MongoClient
 
 const connectionString = "mongodb+srv://admin:admin@dezbatero.xrpsr.mongodb.net/test?authSource=admin&replicaSet=atlas-x3jw5l-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true"
@@ -37,7 +38,19 @@ app.get("/topics",
         );
 })
 
+/**
+ * TOPICS GETBYID
+ */
+
 app.get("/topics/:id",
     function(req,res,next){
-        db.collection()
+        let id = req.params.id;
+        console.log(id);
+        try {
+            topics.findOne({_id: mongo.ObjectId(id)}).then(result =>
+                res.status(300).json({message: result}));
+        }
+        catch(e){
+            res.status(400).json({"message": "something went wrong"});
+        }
     })
