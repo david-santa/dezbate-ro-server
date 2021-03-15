@@ -33,9 +33,14 @@ app.use((error, req, res, next) => {
  */
 app.get("/topics",
     function(req,res,next){
-        topics.find().toArray().then(result=>
-            res.status(300).json({"message":result})
+    try {
+        topics.find().toArray().then(result =>
+            res.status(300).json({"message": result})
         );
+    }
+    catch(e){
+        res.status(400).json({"message": "something went wrong"});
+    }
 })
 
 /**
