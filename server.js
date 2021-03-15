@@ -62,18 +62,18 @@ app.get("/topics/:id",
     })
 
 /**
- * TOPICS
+ * TOPIC POST
  */
 
-// app.post("/topics",
-//     function(req,res,next){
-//     try{
-//         topics.insertOne(req.body).then(result=>{
-//             res.status(201).json({message:"created"})
-//         })
-//     }
-//     catch(e){
-//         res.status(400).json({"message": "something went wrong"});
-//         console.log(e);
-//     }
-//     })
+app.post("/topics",
+    function(req,res,next){
+    try{
+        topics.insertOne(req.body).then(result=>{
+            res.status(201).json({message:"created"})
+        })
+    }
+    catch(e){
+        res.status(400).json({"message": "something went wrong"});
+        console.log(e);
+    }
+    })
