@@ -4,12 +4,14 @@ const MongoClient = require('mongodb').MongoClient
 
 const connectionString = "mongodb+srv://admin:admin@dezbatero.xrpsr.mongodb.net/test?authSource=admin&replicaSet=atlas-x3jw5l-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true"
 
-var db;
+let db;
+let topics;
 
 MongoClient.connect(connectionString, { useUnifiedTopology: true })
   .then(client => {
     console.log('Connected to Database')
       db = client.db('dezbate-ro')
+      topics = db.collection('topics');
   })
   .catch(error => console.error(error))
 
@@ -26,11 +28,16 @@ app.use((error, req, res, next) => {
  */
 
 /**
- * TOPICS GET
+ * TOPICS GET ALL
  */
 app.get("/topics",
-    function(req,res){
-    db.collection('topics').find().toArray().then(result=>
-        res.status(300).json({"message":result})
-    );
+    function(req,res,next){
+        topics.find().toArray().then(result=>
+            res.status(300).json({"message":result})
+        );
 })
+
+app.get("/topics/:id",
+    function(req,res,next){
+        db.collection()
+    })
