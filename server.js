@@ -138,6 +138,7 @@ app.delete("/topics/:id",
 /**
  * ARGUMENTS GET ALL
  */
+
 app.get("/arguments",
     function (req, res, next) {
         try {
@@ -174,7 +175,7 @@ app.post("/arguments",
             req.body.topic = mongo.ObjectId(req.body.topic);
             argumentsCollection.insertOne(req.body).then(result => {
                 console.log(result.ops[0]._id);
-                topicsCollection.findOneAndUpdate({_id:mongo.ObjectId(result.ops[0].topic)},{$push:{children:mongo.ObjectId(result.ops[0]._id)}});
+                topicsCollection.findOneAndUpdate({_id: mongo.ObjectId(result.ops[0].topic)}, {$push: {children: mongo.ObjectId(result.ops[0]._id)}});
                 res.status(201).json({message: "created"})
             })
         } catch (e) {
