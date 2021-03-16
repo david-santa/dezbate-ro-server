@@ -116,18 +116,6 @@ app.put("/topics/:id",
  *  TOPIC DELETE
  */
 
-function recursivaTati(id) {
-    argumentsCollection.findOne({topic: mongo.ObjectId(id)}).then(result => {
-        console.log(result)
-        if(result.children.length > 0)
-        for (let i = 0; i < result.children.length; i++) {
-            console.log("FOUND")
-            if(result.children[i].children)
-            recursivaTati(result.children[i]._id);
-        }
-    })
-}
-
 app.delete("/topics/:id",
     function (req, res, next) {
         let id = req.params.id;
