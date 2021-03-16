@@ -210,12 +210,35 @@ app.delete("/arguments/:id",
  */
 
 
-app.get("/arguments/topic/:id",
+app.get("/arguments/parent/:id",
     function (req, res, next) {
         let id = req.params.id;
         let list = [];
         try {
             argumentsCollection.find({parent: mongo.ObjectId(id)}).toArray().then(result => {
+                    // res.status(200).json({"message": result});
+                    for (let i = 0; i < result.length; i++) {
+                        list.push(result[i])
+                    }
+                    res.status(200).json({"message": list});
+                }
+            )
+        } catch (e) {
+            console.log(e);
+            res.status(400).json({"message": "something went wrong"});
+        }
+    })
+
+/**
+ *  ARGUMENTS GET FOR TOPIC
+ */
+
+app.get("/arguments/topic/:id",
+    function (req, res, next) {
+        let id = req.params.id;
+        let list = [];
+        try {
+            argumentsCollection.find({topic: mongo.ObjectId(id)}).toArray().then(result => {
                     // res.status(200).json({"message": result});
                     for (let i = 0; i < result.length; i++) {
                         list.push(result[i])
