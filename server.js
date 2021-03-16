@@ -204,6 +204,10 @@ app.delete("/arguments/:id",
     function (req, res, next) {
         let id = req.params.id;
         try {
+            argumentsCollection.findOne({_id:mongo.ObjectId(id)}).then(result=>{
+                console.log(id)
+                topicsCollection.findOneAndUpdate({_id:result.topic},{$pull:{children:{$in:[mongo.ObjectId(id)]}}})
+            })
             argumentsCollection.findOneAndDelete({_id: mongo.ObjectId(id)});
             res.status(200).json({"message": "deleted"})
         } catch (e) {
