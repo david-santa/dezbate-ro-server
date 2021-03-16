@@ -204,3 +204,22 @@ app.delete("/arguments/:id",
             res.status(400).json({"message": "something went wrong"});
         }
     })
+
+/**
+ *  ARGUMENTS GET FOR TOPIC
+ */
+
+
+app.get("/arguments/topic/:id",
+    function (req, res, next) {
+        let id = req.params.id;
+        try {
+            argumentsCollection.find({parent: mongo.ObjectId(id)}).toArray().then(result => {
+                    res.status(200).json({"message": result});
+                }
+            )
+        } catch (e) {
+            console.log(e);
+            res.status(400).json({"message": "something went wrong"});
+        }
+    })
