@@ -80,12 +80,30 @@ app.post("/topics",
  * TOPICS ADD A VIEW
  */
 
-app.put("/topics/:id",
+app.put("/topics/addview/:id",
     function(req,res,next){
         let id = req.params.id;
         try{
             console.log(id);
             topics.findOneAndUpdate({_id:mongo.ObjectId(id)}, {$inc: {"views": 1}});
+            res.status(200).json({"message":"updated"})
+        }
+        catch(e){
+            console.log(e)
+            res.status(400).json({"message": "something went wrong"});
+        }
+    })
+
+/**
+ *  TOPICS PUT
+ */
+
+app.put("/topics/:id",
+    function(req,res,next){
+        let id = req.params.id;
+        try{
+            console.log(id);
+            topics.findOneAndUpdate({_id:mongo.ObjectId(id)}, {$set: req.body});
             res.status(200).json({"message":"updated"})
         }
         catch(e){
