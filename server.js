@@ -48,7 +48,7 @@ app.get("/topics",
     })
 
 /**
- * TOPICS GETBYID
+ * TOPIC GETBYID
  */
 
 app.get("/topics/:id",
@@ -66,7 +66,7 @@ app.get("/topics/:id",
  * TOPIC POST
  */
 
-app.post("/topicsCollection",
+app.post("/topics",
     function (req, res, next) {
         try {
             topicsCollection.insertOne(req.body).then(result => {
@@ -78,7 +78,7 @@ app.post("/topicsCollection",
     })
 
 /**
- * TOPICS ADD A VIEW
+ * TOPIC ADD A VIEW
  */
 
 app.put("/topics/addview/:id",
@@ -95,7 +95,7 @@ app.put("/topics/addview/:id",
     })
 
 /**
- *  TOPICS PUT
+ *  TOPIC PUT
  */
 
 app.put("/topics/:id",
@@ -113,7 +113,7 @@ app.put("/topics/:id",
 
 
 /**
- *  TOPICS DELETE
+ *  TOPIC DELETE
  */
 
 app.delete("/topics/:id",
@@ -143,7 +143,7 @@ app.get("/arguments",
     })
 
 /**
- * ARGUMENTS GETBYID
+ * ARGUMENT GETBYID
  */
 
 app.get("/arguments/:id",
@@ -157,6 +157,17 @@ app.get("/arguments/:id",
         }
     })
 
+/**
+ * ARGUMENT POST
+ */
 
-
-
+app.post("/arguments",
+    function (req, res, next) {
+        try {
+            argumentsCollection.insertOne(req.body).then(result => {
+                res.status(201).json({message: "created"})
+            })
+        } catch (e) {
+            res.status(400).json({"message": "something went wrong"});
+        }
+    })
