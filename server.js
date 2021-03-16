@@ -116,12 +116,31 @@ app.put("/topics/:id",
  *  TOPIC DELETE
  */
 
+function recursivaTati(id) {
+    argumentsCollection.findOne({topic: mongo.ObjectId(id)}).then(result => {
+        console.log(result)
+        if(result.children.length > 0)
+        for (let i = 0; i < result.children.length; i++) {
+            console.log("FOUND")
+            if(result.children[i].children)
+            recursivaTati(result.children[i]._id);
+        }
+    })
+}
+
 app.delete("/topics/:id",
     function (req, res, next) {
         let id = req.params.id;
         try {
-            topicsCollection.findOneAndDelete({_id: mongo.ObjectId(id)});
-            res.status(200).json({"message": "deleted"})
+            argumentsCollection.find({topic:mongo.ObjectId(id)}).toArray().then(result=>{
+                for(let i=0;i<result.length;i++){
+                    console.log(result[i]._id);
+                    argumentsCollection.deleteOne({_id:mongo.ObjectId(result[i]._id)})
+                }
+            })
+            topicsCollection.findOneAndDelete({_id: mongo.ObjectId(id)}).then(result=>{
+                res.status(200).json({"message": "deleted"})
+            });
         } catch (e) {
             console.log(e);
             res.status(400).json({"message": "something went wrong"});
