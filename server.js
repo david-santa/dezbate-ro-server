@@ -120,13 +120,13 @@ app.delete("/topics/:id",
     function (req, res, next) {
         let id = req.params.id;
         try {
-            argumentsCollection.find({topic:mongo.ObjectId(id)}).toArray().then(result=>{
-                for(let i=0;i<result.length;i++){
+            argumentsCollection.find({topic: mongo.ObjectId(id)}).toArray().then(result => {
+                for (let i = 0; i < result.length; i++) {
                     console.log(result[i]._id);
-                    argumentsCollection.deleteOne({_id:mongo.ObjectId(result[i]._id)})
+                    argumentsCollection.deleteOne({_id: mongo.ObjectId(result[i]._id)})
                 }
             })
-            topicsCollection.findOneAndDelete({_id: mongo.ObjectId(id)}).then(result=>{
+            topicsCollection.findOneAndDelete({_id: mongo.ObjectId(id)}).then(result => {
                 res.status(200).json({"message": "deleted"})
             });
         } catch (e) {
@@ -171,7 +171,10 @@ app.get("/arguments/:id",
 app.post("/arguments",
     function (req, res, next) {
         try {
+            req.body.topic = mongo.ObjectId(req.body.topic);
             argumentsCollection.insertOne(req.body).then(result => {
+                console.log(result.ops[0]._id);
+                topicsCollection.findOneAndUpdate({_id:mongo.ObjectId(result.ops[0].topic)},{$push:{children:mongo.ObjectId(result.ops[0]._id)}});
                 res.status(201).json({message: "created"})
             })
         } catch (e) {
@@ -196,6 +199,7 @@ app.put("/arguments/:id",
         }
     })
 
+
 /**
  *  ARGUMENT DELETE
  */
@@ -204,9 +208,9 @@ app.delete("/arguments/:id",
     function (req, res, next) {
         let id = req.params.id;
         try {
-            argumentsCollection.findOne({_id:mongo.ObjectId(id)}).then(result=>{
+            argumentsCollection.findOne({_id: mongo.ObjectId(id)}).then(result => {
                 console.log(id)
-                topicsCollection.findOneAndUpdate({_id:result.topic},{$pull:{children:{$in:[mongo.ObjectId(id)]}}})
+                topicsCollection.findOneAndUpdate({_id: result.topic}, {$pull: {children: {$in: [mongo.ObjectId(id)]}}})
             })
             argumentsCollection.findOneAndDelete({_id: mongo.ObjectId(id)});
             res.status(200).json({"message": "deleted"})
