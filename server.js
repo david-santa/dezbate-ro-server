@@ -65,15 +65,14 @@ app.get("/topics/:id",
  */
 
 app.post("/topics",
-    function(req,res,next){
-    try{
-        topics.insertOne(req.body).then(result=>{
-            res.status(201).json({message:"created"})
-        })
-    }
-    catch(e){
-        res.status(400).json({"message": "something went wrong"});
-    }
+    function (req, res, next) {
+        try {
+            topics.insertOne(req.body).then(result => {
+                res.status(201).json({message: "created"})
+            })
+        } catch (e) {
+            res.status(400).json({"message": "something went wrong"});
+        }
     })
 
 /**
@@ -81,14 +80,13 @@ app.post("/topics",
  */
 
 app.put("/topics/addview/:id",
-    function(req,res,next){
+    function (req, res, next) {
         let id = req.params.id;
-        try{
+        try {
             console.log(id);
-            topics.findOneAndUpdate({_id:mongo.ObjectId(id)}, {$inc: {"views": 1}});
-            res.status(200).json({"message":"updated"})
-        }
-        catch(e){
+            topics.findOneAndUpdate({_id: mongo.ObjectId(id)}, {$inc: {"views": 1}});
+            res.status(200).json({"message": "updated"})
+        } catch (e) {
             console.log(e)
             res.status(400).json({"message": "something went wrong"});
         }
@@ -99,15 +97,29 @@ app.put("/topics/addview/:id",
  */
 
 app.put("/topics/:id",
-    function(req,res,next){
+    function (req, res, next) {
         let id = req.params.id;
-        try{
+        try {
             console.log(id);
-            topics.findOneAndUpdate({_id:mongo.ObjectId(id)}, {$set: req.body});
-            res.status(200).json({"message":"updated"})
-        }
-        catch(e){
+            topics.findOneAndUpdate({_id: mongo.ObjectId(id)}, {$set: req.body});
+            res.status(200).json({"message": "updated"})
+        } catch (e) {
             console.log(e)
             res.status(400).json({"message": "something went wrong"});
         }
     })
+
+app.delete("/topics/:id",
+    function (req, res, next) {
+        let id = req.params.id;
+        try{
+            topics.findOneAndDelete({_id:mongo.ObjectId(id)});
+            res.status(200).json({"message": "deleted"})
+
+        }
+        catch (e) {
+            console.log(e);
+            res.status(400).json({"message": "something went wrong"});
+        }
+    }
+)
