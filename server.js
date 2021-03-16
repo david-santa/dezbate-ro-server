@@ -109,15 +109,18 @@ app.put("/topics/:id",
         }
     })
 
+
+/**
+ *  TOPICS DELETE
+ */
+
 app.delete("/topics/:id",
     function (req, res, next) {
         let id = req.params.id;
-        try{
-            topics.findOneAndDelete({_id:mongo.ObjectId(id)});
+        try {
+            topics.findOneAndDelete({_id: mongo.ObjectId(id)});
             res.status(200).json({"message": "deleted"})
-
-        }
-        catch (e) {
+        } catch (e) {
             console.log(e);
             res.status(400).json({"message": "something went wrong"});
         }
