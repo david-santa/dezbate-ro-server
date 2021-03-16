@@ -173,7 +173,7 @@ app.post("/arguments",
     })
 
 /**
- *  TOPIC PUT
+ *  ARGUMENT PUT
  */
 
 app.put("/arguments/:id",
@@ -185,6 +185,22 @@ app.put("/arguments/:id",
             res.status(200).json({"message": "updated"})
         } catch (e) {
             console.log(e)
+            res.status(400).json({"message": "something went wrong"});
+        }
+    })
+
+/**
+ *  ARGUMENT DELETE
+ */
+
+app.delete("/arguments/:id",
+    function (req, res, next) {
+        let id = req.params.id;
+        try {
+            argumentsCollection.findOneAndDelete({_id: mongo.ObjectId(id)});
+            res.status(200).json({"message": "deleted"})
+        } catch (e) {
+            console.log(e);
             res.status(400).json({"message": "something went wrong"});
         }
     })
