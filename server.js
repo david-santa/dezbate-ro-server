@@ -171,3 +171,20 @@ app.post("/arguments",
             res.status(400).json({"message": "something went wrong"});
         }
     })
+
+/**
+ *  TOPIC PUT
+ */
+
+app.put("/arguments/:id",
+    function (req, res, next) {
+        let id = req.params.id;
+        try {
+            console.log(id);
+            argumentsCollection.findOneAndUpdate({_id: mongo.ObjectId(id)}, {$set: req.body});
+            res.status(200).json({"message": "updated"})
+        } catch (e) {
+            console.log(e)
+            res.status(400).json({"message": "something went wrong"});
+        }
+    })
