@@ -7,13 +7,15 @@ const bodyParser = require('body-parser')
 const connectionString = "mongodb+srv://admin:admin@dezbatero.xrpsr.mongodb.net/test?authSource=admin&replicaSet=atlas-x3jw5l-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true"
 
 let db;
-let topics;
+let topicsCollection;
+let argumentsCollection;
 
 MongoClient.connect(connectionString, {useUnifiedTopology: true})
     .then(client => {
         console.log('Connected to Database')
         db = client.db('dezbate-ro')
-        topics = db.collection('topics');
+        topicsCollection = db.collection('topics');
+        argumentsCollection = db.collection('arguments');
     })
     .catch(error => console.error(error))
 
@@ -37,7 +39,7 @@ app.use(bodyParser())
 app.get("/topics",
     function (req, res, next) {
         try {
-            topics.find().toArray().then(result =>
+            topicsCollection.find().toArray().then(result =>
                 res.status(200).json({"message": result})
             );
         } catch (e) {
@@ -53,7 +55,7 @@ app.get("/topics/:id",
     function (req, res, next) {
         let id = req.params.id;
         try {
-            topics.findOne({_id: mongo.ObjectId(id)}).then(result =>
+            topicsCollection.findOne({_id: mongo.ObjectId(id)}).then(result =>
                 res.status(200).json({message: result}));
         } catch (e) {
             res.status(404).json({"message": "something went wrong"});
@@ -64,10 +66,10 @@ app.get("/topics/:id",
  * TOPIC POST
  */
 
-app.post("/topics",
+app.post("/topicsCollection",
     function (req, res, next) {
         try {
-            topics.insertOne(req.body).then(result => {
+            topicsCollection.insertOne(req.body).then(result => {
                 res.status(201).json({message: "created"})
             })
         } catch (e) {
@@ -84,7 +86,7 @@ app.put("/topics/addview/:id",
         let id = req.params.id;
         try {
             console.log(id);
-            topics.findOneAndUpdate({_id: mongo.ObjectId(id)}, {$inc: {"views": 1}});
+            topicsCollection.findOneAndUpdate({_id: mongo.ObjectId(id)}, {$inc: {"views": 1}});
             res.status(200).json({"message": "updated"})
         } catch (e) {
             console.log(e)
@@ -101,7 +103,7 @@ app.put("/topics/:id",
         let id = req.params.id;
         try {
             console.log(id);
-            topics.findOneAndUpdate({_id: mongo.ObjectId(id)}, {$set: req.body});
+            topicsCollection.findOneAndUpdate({_id: mongo.ObjectId(id)}, {$set: req.body});
             res.status(200).json({"message": "updated"})
         } catch (e) {
             console.log(e)
@@ -118,11 +120,24 @@ app.delete("/topics/:id",
     function (req, res, next) {
         let id = req.params.id;
         try {
-            topics.findOneAndDelete({_id: mongo.ObjectId(id)});
+            topicsCollection.findOneAndDelete({_id: mongo.ObjectId(id)});
             res.status(200).json({"message": "deleted"})
         } catch (e) {
             console.log(e);
             res.status(400).json({"message": "something went wrong"});
         }
-    }
-)
+    })
+
+/**
+ * ARGUMENTS GET ALL
+ */
+app.get("/arguments",
+    function (req, res, next) {
+        try {
+            argumentsCollection.find().toArray().then(result =>
+                res.status(200).json({"message": result})
+            );
+        } catch (e) {
+            res.status(404).json({"message": "something went wrong"});
+        }
+    })
