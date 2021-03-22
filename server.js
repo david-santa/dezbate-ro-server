@@ -11,18 +11,7 @@ let db;
 let topicsCollection;
 let argumentsCollection;
 
-const whitelist = ['http://davidsanta.ro', 'http://localhost/']
-const corsOptions = {
-    origin: function (origin, callback) {
-        if (whitelist.indexOf(origin) !== -1) {
-            callback(null, true)
-        } else {
-            callback(new Error('Not allowed by CORS'))
-        }
-    }
-}
-
-app.use(cors(corsOptions));
+app.use(cors());
 
 MongoClient.connect(connectionString, {useUnifiedTopology: true})
     .then(client => {
@@ -33,8 +22,8 @@ MongoClient.connect(connectionString, {useUnifiedTopology: true})
     })
     .catch(error => console.error(error))
 
-app.listen(3000, function () {
-    console.log('listening on 3000');
+app.listen(3001, function () {
+    console.log('listening on 3001');
 });
 
 app.use((error, req, res, next) => {
