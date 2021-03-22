@@ -3,12 +3,26 @@ const app = express();
 const mongo = require('mongodb')
 const MongoClient = require('mongodb').MongoClient
 const bodyParser = require('body-parser')
+const cors = require('cors');
 
 const connectionString = "mongodb+srv://admin:admin@dezbatero.xrpsr.mongodb.net/test?authSource=admin&replicaSet=atlas-x3jw5l-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true"
 
 let db;
 let topicsCollection;
 let argumentsCollection;
+
+const whitelist = ['http://davidsanta.ro', 'http://localhost/']
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    }
+}
+
+app.use(cors(corsOptions));
 
 MongoClient.connect(connectionString, {useUnifiedTopology: true})
     .then(client => {
