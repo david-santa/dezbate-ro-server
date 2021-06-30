@@ -10,6 +10,7 @@ const connectionString = "mongodb+srv://admin:admin@dezbatero.xrpsr.mongodb.net/
 let db;
 let topicsCollection;
 let argumentsCollection;
+let reportsCollection;
 
 app.use(cors());
 
@@ -19,6 +20,7 @@ MongoClient.connect(connectionString, {useUnifiedTopology: true})
         db = client.db('dezbate-ro')
         topicsCollection = db.collection('topics');
         argumentsCollection = db.collection('arguments');
+        reportsCollection = db.collection('reports')
     })
     .catch(error => console.error(error))
 
@@ -273,6 +275,67 @@ app.get("/arguments/topic/:id",
             )
         } catch (e) {
             console.log(e);
+            res.status(400).json({"message": "something went wrong"});
+        }
+    })
+
+/**
+ * REPORTS GET ALL
+ */
+
+app.get("/reports",
+    function (req, res, next) {
+        try {
+            reportsCollection.find().toArray().then(result =>
+                res.status(200).json({"message": result})
+            );
+        } catch (e) {
+            res.status(404).json({"message": "something went wrong"});
+        }
+    })
+
+/**
+ * REPORT GETBYID
+ */
+
+app.get("/reports/:id",
+    function (req, res, next) {
+        let id = req.params.id;
+        try {
+            reportsCollection.findOne({_id: mongo.ObjectId(id)}).then(result =>
+                res.status(200).json({message: result}));
+        } catch (e) {
+            res.status(404).json({"message": "something went wrong"});
+        }
+    })
+
+/**
+ * REPORT POST
+ */
+
+app.post("/reports",
+    function (req, res, next) {
+        try {
+            reportsCollection.insertOne(req.body).then(result => {
+                res.status(201).json({message: "created"})
+            })
+        } catch (e) {
+            res.status(400).json({"message": "something went wrong"});
+        }
+    })
+
+/**
+ *  REPORT PUT
+ */
+
+app.put("/reports/:id",
+    function (req, res, next) {
+        let id = req.params.id;
+        try {
+            reportsCollection.findOneAndUpdate({_id: mongo.ObjectId(id)}, {$set: req.body});
+            res.status(200).json({"message": "updated"})
+        } catch (e) {
+            console.log(e)
             res.status(400).json({"message": "something went wrong"});
         }
     })
