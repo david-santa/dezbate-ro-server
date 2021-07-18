@@ -36,7 +36,7 @@ MongoClient.connect(connectionString, {useUnifiedTopology: true})
                         })
                         console.log(finalScore)
                         if (finalScore > 100 || finalScore < -100) {
-                            topicsCollection.findOneAndUpdate({_id: each._id}, {$set: {"isClosed":true}});
+                            topicsCollection.findOneAndUpdate({_id: each._id}, {$set: {"isClosed": true}});
                         }
                     }
                 )
@@ -60,20 +60,26 @@ app.use((error, req, res, next) => {
     console.warn(error);
 })
 
-// const checkClosingDebates = schedule.scheduleJob('* * * * * * ', function(){
-//     topicsCollection.find().toArray().then(topic=>{
-//         topic.forEach(each=> {
-//             let finalScore = 0;
-//             argumentsCollection.find({topic: mongo.ObjectId(each._id)}).toArray().then(result => {
-//                     result.forEach(each=>{
-//                         finalScore+=each.likes;
-//                     })
-//                 }
-//             )
-//             console.log(finalScore)
-//         })
-//     })
-// })
+const checkClosingDebates = schedule.scheduleJob('0 0 0 * * * ', function () {
+        topicsCollection.find().toArray().then(topic => {
+            topic.forEach(each => {
+                let finalScore = 0;
+                argumentsCollection.find({topic: mongo.ObjectId(each._id)}).toArray().then(result => {
+                        result.forEach(each => {
+                            if (each.type === 'pro')
+                                finalScore += each.likes;
+                            else
+                                finalScore -= each.likes;
+                        })
+                        console.log(finalScore)
+                        if (finalScore > 100 || finalScore < -100) {
+                            topicsCollection.findOneAndUpdate({_id: each._id}, {$set: {"isClosed": true}});
+                        }
+                    }
+                )
+            })
+        })
+    })
 
 /**
  * TOPICS CRUD
@@ -180,6 +186,29 @@ app.delete("/topics/:id",
         } catch (e) {
             console.log(e);
             res.status(400).json({"message": "something went wrong"});
+        }
+    })
+
+/**
+ * TOPIC GET SCORE
+ */
+
+app.get("/topics/score/:id",
+    function (req, res, next) {
+        let id = req.params.id;
+        let finalScore = 0;
+        try {
+            argumentsCollection.find({topic: mongo.ObjectId(id)}).toArray().then(result => {
+                result.forEach(each => {
+                    if (each.type === 'pro')
+                        finalScore += each.likes;
+                    else
+                        finalScore -= each.likes;
+                })
+                res.status(200).json({"message": finalScore})
+            })
+        } catch (e) {
+            res.status(404).json({"message": "something went wrong"});
         }
     })
 
