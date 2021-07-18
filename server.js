@@ -3,7 +3,8 @@ const app = express();
 const mongo = require('mongodb')
 const MongoClient = require('mongodb').MongoClient
 const bodyParser = require('body-parser')
-const cors = require('cors');
+const cors = require('cors')
+const schedule = require('node-schedule')
 
 const connectionString = "mongodb+srv://admin:admin@dezbatero.xrpsr.mongodb.net/test?authSource=admin&replicaSet=atlas-x3jw5l-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true"
 
@@ -21,10 +22,31 @@ MongoClient.connect(connectionString, {useUnifiedTopology: true})
         topicsCollection = db.collection('topics');
         argumentsCollection = db.collection('arguments');
         reportsCollection = db.collection('reports')
-    })
+    }).then(
+    function () {
+        topicsCollection.find().toArray().then(topic => {
+            topic.forEach(each => {
+                let finalScore = 0;
+                argumentsCollection.find({topic: mongo.ObjectId(each._id)}).toArray().then(result => {
+                        result.forEach(each => {
+                            if (each.type === 'pro')
+                                finalScore += each.likes;
+                            else
+                                finalScore -= each.likes;
+                        })
+                        console.log(finalScore)
+                        if (finalScore > 100 || finalScore < -100) {
+                            topicsCollection.findOneAndUpdate({_id: each._id}, {$set: {"isClosed":true}});
+                        }
+                    }
+                )
+            })
+        })
+    }
+)
     .catch(error => console.error(error))
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
@@ -37,6 +59,21 @@ app.listen(3001, function () {
 app.use((error, req, res, next) => {
     console.warn(error);
 })
+
+// const checkClosingDebates = schedule.scheduleJob('* * * * * * ', function(){
+//     topicsCollection.find().toArray().then(topic=>{
+//         topic.forEach(each=> {
+//             let finalScore = 0;
+//             argumentsCollection.find({topic: mongo.ObjectId(each._id)}).toArray().then(result => {
+//                     result.forEach(each=>{
+//                         finalScore+=each.likes;
+//                     })
+//                 }
+//             )
+//             console.log(finalScore)
+//         })
+//     })
+// })
 
 /**
  * TOPICS CRUD
@@ -240,9 +277,11 @@ app.delete("/arguments/:id",
 app.get("/arguments/parent/:id",
     function (req, res, next) {
         let id = req.params.id;
+        console.log(mongo.ObjectId(id));
         let list = [];
         try {
-            argumentsCollection.find({parent: mongo.ObjectId(id)}).toArray().then(result => {
+            argumentsCollection.find({parent: id}).toArray().then(result => {
+                    console.log(result)
                     // res.status(200).json({"message": result});
                     for (let i = 0; i < result.length; i++) {
                         list.push(result[i])
